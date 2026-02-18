@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testa dina digitala färdigheter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .start-screen h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .start-screen p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .question-screen {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .question-number {
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(103, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .results-screen {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .score-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        .score-circle-bg {
+            fill: none;
+            stroke: #e0e0e0;
+            stroke-width: 15;
+        }
+
+        .score-circle-progress {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 15;
+            stroke-linecap: round;
+            stroke-dasharray: 565.48;
+            stroke-dashoffset: 565.48;
+            transition: stroke-dashoffset 1.5s ease-out;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .score-label {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1em;
+            color: #666;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .category-results {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .category-item:hover {
+            transform: translateX(5px);
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .category-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-bar {
+            width: 100px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 1s ease-out;
+        }
+
+        .recommendations {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .recommendations h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .recommendations li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .question-text {
+                font-size: 1.1em;
+            }
+            
+            .option {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Testa dina digitala färdigheter</h1>
+            <p>All Digital Weeks 2026</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <div class="content">
+            <!-- Start screen -->
+            <div class="start-screen" id="startScreen">
+                <h2>Välkommen!</h2>
+                <p>Detta test hjälper dig att utvärdera dina digitala färdigheter inom olika områden. Testet tar cirka 5-10 minuter att genomföra.</p>
+                <p>Du kommer att få frågor inom följande områden:</p>
+                <ul style="text-align: left; display: inline-block; margin: 20px 0;">
+                    <li>📱 Grundläggande datorkunskap</li>
+                    <li>🌐 Internet och webbläsare</li>
+                    <li>📧 Digital kommunikation</li>
+                    <li>🔒 Digital säkerhet</li>
+                    <li>📄 Digital information</li>
+                </ul>
+                <button class="btn" onclick="startTest()">Starta testet</button>
+            </div>
+            
+            <!-- Question screen -->
+            <div class="question-screen" id="questionScreen">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="navigation">
+                    <button class="btn" onclick="previousQuestion()" id="prevBtn" style="display:none;">Föregående</button>
+                    <button class="btn" onclick="nextQuestion()" id="nextBtn">Nästa</button>
+                </div>
+            </div>
+            
+            <!-- Results screen -->
+            <div class="results-screen" id="resultsScreen">
+                <h2 style="color: #333; margin-bottom: 30px;">Dina resultat</h2>
+                
+                <div class="score-circle">
+                    <svg width="200" height="200">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="score-circle-bg" cx="100" cy="100" r="90"></circle>
+                        <circle class="score-circle-progress" id="scoreCircle" cx="100" cy="100" r="90"></circle>
+                    </svg>
+                    <div class="score-text" id="scoreText">0</div>
+                    <div class="score-label">poäng</div>
+                </div>
+                
+                <div class="level-badge" id="levelBadge">Nybörjare</div>
+                
+                <div class="category-results">
+                    <h3 style="margin-bottom: 20px;">Resultat per kategori</h3>
+                    <div id="categoryScores"></div>
+                </div>
+                
+                <div class="recommendations" id="recommendations">
+                    <h3>Rekommendationer</h3>
+                    <ul id="recommendationsList"></ul>
+                </div>
+                
+                <button class="btn" onclick="restartTest()">Gör testet igen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Grundläggande datorkunskap
+            {
+                category: "Grundläggande datorkunskap",
+                question: "Hur bekväm känner du dig med att installera nya program på din dator?",
+                options: [
+                    { text: "Jag vet inte hur man gör", score: 0 },
+                    { text: "Jag kan göra det med hjälp", score: 1 },
+                    { text: "Jag kan göra det själv", score: 2 },
+                    { text: "Jag kan hjälpa andra med det", score: 3 }
+                ]
+            },
+            {
+                category: "Grundläggande datorkunskap",
+                question: "Kan du hantera filer och mappar (kopiera, flytta, döpa om)?",
+                options: [
+                    { text: "Nej, jag vet inte hur", score: 0 },
+                    { text: "Lite, men jag blir ofta förvirrad", score: 1 },
+                    { text: "Ja, jag kan grunderna", score: 2 },
+                    { text: "Ja, jag är mycket bekväm med det", score: 3 }
+                ]
+            },
+            {
+                category: "Grundläggande datorkunskap",
+                question: "Kan du ansluta kringutrustning som skrivare eller hörlurar?",
+                options: [
+                    { text: "Jag har aldrig provat", score: 0 },
+                    { text: "Jag behöver alltid hjälp", score: 1 },
+                    { text: "Jag kan göra det med lite tid", score: 2 },
+                    { text: "Jag gör det utan problem", score: 3 }
+                ]
+            },
+            {
+                category: "Grundläggande datorkunskap",
+                question: "Hur hanterar du uppdateringar av operativsystem och program?",
+                options: [
+                    { text: "Jag vet inte vad det är", score: 0 },
+                    { text: "Någon annan gör det åt mig", score: 1 },
+                    { text: "Jag kan göra det när jag får meddelanden", score: 2 },
+                    { text: "Jag håller aktivt mina system uppdaterade", score: 3 }
+                ]
+            },
+            
+            // Internet och webbläsare
+            {
+                category: "Internet och webbläsare",
+                question: "Hur bra är du på att söka information på internet?",
+                options: [
+                    { text: "Jag har svårt att hitta det jag söker", score: 0 },
+                    { text: "Jag hittar ibland det jag söker", score: 1 },
+                    { text: "Jag hittar oftast det jag söker", score: 2 },
+                    { text: "Jag använder avancerade söktekniker", score: 3 }
+                ]
+            },
+            {
+                category: "Internet och webbläsare",
+                question: "Kan du bedöma om information på internet är tillförlitlig?",
+                options: [
+                    { text: "Jag vet inte hur man avgör det", score: 0 },
+                    { text: "Jag är osäker men försöker", score: 1 },
+                    { text: "Jag kan ofta avgöra det", score: 2 },
+                    { text: "Jag är mycket bra på källkritik", score: 3 }
+                ]
+            },
+            {
+                category: "Internet och webbläsare",
+                question: "Kan du hantera bokmärken och favoriter i din webbläsare?",
+                options: [
+                    { text: "Jag vet inte vad det är", score: 0 },
+                    { text: "Jag har sett det men använder det inte", score: 1 },
+                    { text: "Jag använder det ibland", score: 2 },
+                    { text: "Jag organiserar mina bokmärken i mappar", score: 3 }
+                ]
+            },
+            {
+                category: "Internet och webbläsare",
+                question: "Förstår du vad cookies och integritetsinställningar innebär?",
+                options: [
+                    { text: "Nej, inte alls", score: 0 },
+                    { text: "Jag har hört talas om det", score: 1 },
+                    { text: "Jag förstår grunderna", score: 2 },
+                    { text: "Jag kan konfigurera mina integritetsinställningar", score: 3 }
+                ]
+            },
+            
+            // Digital kommunikation
+            {
+                category: "Digital kommunikation",
+                question: "Hur ofta använder du e-post?",
+                options: [
+                    { text: "Aldrig eller nästan aldrig", score: 0 },
+                    { text: "Någon gång ibland", score: 1 },
+                    { text: "Flera gånger i veckan", score: 2 },
+                    { text: "Dagligen", score: 3 }
+                ]
+            },
+            {
+                category: "Digital kommunikation",
+                question: "Kan du delta i videomöten (Teams, Zoom, etc.)?",
+                options: [
+                    { text: "Nej, jag har aldrig provat", score: 0 },
+                    { text: "Ja, men jag behöver hjälp", score: 1 },
+                    { text: "Ja, jag kan grunderna", score: 2 },
+                    { text: "Jag kan även dela skärm och presentera", score: 3 }
+                ]
+            },
+            {
+                category: "Digital kommunikation",
+                question: "Kan du bifoga filer i e-post eller meddelanden?",
+                options: [
+                    { text: "Jag vet inte hur man gör", score: 0 },
+                    { text: "Jag kan med hjälp", score: 1 },
+                    { text: "Jag kan göra det själv", score: 2 },
+                    { text: "Jag kan även komprimera och hantera stora filer", score: 3 }
+                ]
+            },
+            {
+                category: "Digital kommunikation",
+                question: "Använder du sociala medier eller meddelandeappar?",
+                options: [
+                    { text: "Nej, aldrig", score: 0 },
+                    { text: "Mycket sällan", score: 1 },
+                    { text: "Ja, några stycken", score: 2 },
+                    { text: "Ja, aktivt på flera plattformar", score: 3 }
+                ]
+            },
+            
+            // Digital säkerhet
+            {
+                category: "Digital säkerhet",
+                question: "Hur hanterar du dina lösenord?",
+                options: [
+                    { text: "Jag använder samma överallt", score: 0 },
+                    { text: "Jag har några olika lösenord", score: 1 },
+                    { text: "Jag har unika lösenord för viktiga konton", score: 2 },
+                    { text: "Jag använder lösenordshanterare och tvåfaktorsautentisering", score: 3 }
+                ]
+            },
+            {
+                category: "Digital säkerhet",
+                question: "Kan du känna igen försök till nätfiske (phishing)?",
+                options: [
+                    { text: "Jag vet inte vad det är", score: 0 },
+                    { text: "Jag har hört talas om det", score: 1 },
+                    { text: "Jag kan ofta känna igen det", score: 2 },
+                    { text: "Jag är mycket medveten och försiktig", score: 3 }
+                ]
+            },
+            {
+                category: "Digital säkerhet",
+                question: "Gör du säkerhetskopior av dina viktiga filer?",
+                options: [
+                    { text: "Nej, aldrig", score: 0 },
+                    { text: "Mycket sällan", score: 1 },
+                    { text: "Ibland när jag kommer ihåg", score: 2 },
+                    { text: "Regelbundet och automatiskt", score: 3 }
+                ]
+            },
+            {
+                category: "Digital säkerhet",
+                question: "Hur försiktig är du med att dela personlig information online?",
+                options: [
+                    { text: "Jag tänker inte på det", score: 0 },
+                    { text: "Jag är lite försiktig", score: 1 },
+                    { text: "Jag är ganska försiktig", score: 2 },
+                    { text: "Jag är mycket medveten om vad jag delar", score: 3 }
+                ]
+            },
+            
+            // Digital information
+            {
+                category: "Digital information",
+                question: "Kan du använda digitala tjänster från myndigheter (BankID, Skatteverket, etc.)?",
+                options: [
+                    { text: "Nej, jag har aldrig provat", score: 0 },
+                    { text: "Jag har provat men tycker det är svårt", score: 1 },
+                    { text: "Ja, jag kan använda de flesta", score: 2 },
+                    { text: "Ja, jag använder dem regelbundet utan problem", score: 3 }
+                ]
+            },
+            {
+                category: "Digital information",
+                question: "Hur bekväm är du med att lära dig nya digitala verktyg?",
+                options: [
+                    { text: "Jag undviker helst nya saker", score: 0 },
+                    { text: "Jag lär mig om jag måste", score: 1 },
+                    { text: "Jag är öppen för att lära mig", score: 2 },
+                    { text: "Jag tycker om att utforska nya verktyg", score: 3 }
+                ]
+            },
+            {
+                category: "Digital information",
+                question: "Kan du ladda ner och spara dokument från internet?",
+                options: [
+                    { text: "Jag vet inte hur man gör", score: 0 },
+                    { text: "Jag kan med hjälp", score: 1 },
+                    { text: "Jag kan göra det själv", score: 2 },
+                    { text: "Jag kan även organisera och hitta mina nedladdade filer", score: 3 }
+                ]
+            },
+            {
+                category: "Digital information",
+                question: "Använder du digitala banktjänster eller betalningstjänster?",
+                options: [
+                    { text: "Nej, aldrig", score: 0 },
+                    { text: "Mycket sällan, föredrar kontanter", score: 1 },
+                    { text: "Ja, för grundläggande ärenden", score: 2 },
+                    { text: "Ja, för alla mina bankärenden", score: 3 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let categoryScores = {};
+
+        function startTest() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Fråga ${currentQuestion + 1} av ${questions.length}`;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = option.text;
+                div.onclick = () => selectOption(index);
+                
+                if (answers[currentQuestion] === index) {
+                    div.classList.add('selected');
+                }
+                
+                container.appendChild(div);
+            });
+            
+            updateProgress();
+            updateNavigationButtons();
+        }
+
+        function selectOption(index) {
+            answers[currentQuestion] = index;
+            
+            const options = document.querySelectorAll('.option');
+            options.forEach(o => o.classList.remove('selected'));
+            options[index].classList.add('selected');
+        }
+
+        function nextQuestion() {
+            if (typeof answers[currentQuestion] === 'undefined') {
+                alert('Vänligen välj ett alternativ');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'Visa resultat' : 'Nästa';
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function calculateScores() {
+            let totalScore = 0;
+            categoryScores = {};
+            
+            questions.forEach((q, i) => {
+                const score = q.options[answers[i]].score;
+                totalScore += score;
+                
+                if (!categoryScores[q.category]) {
+                    categoryScores[q.category] = { total: 0, count: 0 };
+                }
+                categoryScores[q.category].total += score;
+                categoryScores[q.category].count++;
+            });
+            
+            return totalScore;
+        }
+
+        function showResults() {
+            document.getElementById('questionScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'block';
+            
+            const totalScore = calculateScores();
+            const maxScore = questions.length * 3;
+            const percentage = (totalScore / maxScore) * 100;
+            
+            // Animate score circle
+            setTimeout(() => {
+                const circle = document.getElementById('scoreCircle');
+                const offset = 565.48 - (565.48 * percentage) / 100;
+                circle.style.strokeDashoffset = offset;
+                
+                // Animate score number
+                let currentScore = 0;
+                const interval = setInterval(() => {
+                    if (currentScore <= totalScore) {
+                        document.getElementById('scoreText').textContent = currentScore;
+                        currentScore++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 50);
+            }, 100);
+            
+            // Set level badge
+            const levelBadge = document.getElementById('levelBadge');
+            if (percentage < 25) {
+                levelBadge.textContent = 'Nybörjare';
+                levelBadge.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            } else if (percentage < 50) {
+                levelBadge.textContent = 'Grundläggande';
+                levelBadge.style.background = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+            } else if (percentage < 75) {
+                levelBadge.textContent = 'Självständig';
+                levelBadge.style.background = 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)';
+            } else {
+                levelBadge.textContent = 'Avancerad';
+                levelBadge.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+            
+            // Show category scores
+            const categoryContainer = document.getElementById('categoryScores');
+            categoryContainer.innerHTML = '';
+            
+            Object.keys(categoryScores).forEach(category => {
+                const score = categoryScores[category];
+                const avgScore = score.total / score.count;
+                const percentage = (avgScore / 3) * 100;
+                
+                const item = document.createElement('div');
+                item.className = 'category-item';
+                item.innerHTML = `
+                    <div class="category-name">${category}</div>
+                    <div class="category-score">
+                        <div class="score-bar">
+                            <div class="score-bar-fill" style="width: 0%;" data-width="${percentage}%"></div>
+                        </div>
+                        <span>${Math.round(percentage)}%</span>
+                    </div>
+                `;
+                categoryContainer.appendChild(item);
+            });
+            
+            // Animate category bars
+            setTimeout(() => {
+                document.querySelectorAll('.score-bar-fill').forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-width');
+                });
+            }, 500);
+            
+            // Show recommendations
+            showRecommendations(percentage);
+        }
+
+        function showRecommendations(percentage) {
+            const list = document.getElementById('recommendationsList');
+            list.innerHTML = '';
+            
+            let recommendations = [];
+            
+            if (percentage < 25) {
+                recommendations = [
+                    'Delta i bibliotekets grundkurs i datoranvändning',
+                    'Boka en individuell handledning med vår digitalhjälp',
+                    'Börja med enkla övningar på DigidelCenter',
+                    'Prova vår nybörjarguide för smartphones och surfplattor'
+                ];
+            } else if (percentage < 50) {
+                recommendations = [
+                    'Delta i våra workshops om internetsäkerhet',
+                    'Lär dig mer om digitala myndighetstjänster',
+                    'Utforska våra guider för sociala medier',
+                    'Testa våra övningar i källkritik'
+                ];
+            } else if (percentage < 75) {
+                recommendations = [
+                    'Fördjupa dig i avancerade söktekniker',
+                    'Lär dig om digitalt skapande och kreativa verktyg',
+                    'Delta i vårt nätverk för digital delaktighet',
+                    'Bli volontär och hjälp andra med digital teknik'
+                ];
+            } else {
+                recommendations = [
+                    'Dela din kunskap - bli digital mentor',
+                    'Utforska nya digitala innovationer',
+                    'Delta i våra avancerade workshops',
+                    'Hjälp till att utveckla bibliotekets digitala tjänster'
+                ];
+            }
+            
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                list.appendChild(li);
+            });
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            answers = [];
+            categoryScores = {};
+            
+            document.getElementById('resultsScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('progressBar').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
