@@ -811,38 +811,7 @@
                 });
             }, 500);
             
-            // Show recommendations
-            showRecommendations(percentage);
-        }
-
-        function showRecommendations(percentage) {
-            const list = document.getElementById('recommendationsList');
-            list.innerHTML = '';
             
-            let recommendations = [];
-            
-            if (percentage < 25) {
-                recommendations = [
-                    
-                ];
-            } else if (percentage < 50) {
-                recommendations = [
-                    
-                ];
-            } else if (percentage < 75) {
-                recommendations = [
-                   
-                ];
-            } else {
-                recommendations = [
-                    
-                ];
-            }
-            
-            recommendations.forEach(rec => {
-                const li = document.createElement('li');
-                li.textContent = rec;
-                list.appendChild(li);
             });
         }
 
